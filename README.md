@@ -1,85 +1,71 @@
 UNDER CONSTRUCTION #
 
-✅ CloudSentry Project Flow (Step-by-Step Architecture)
-👥 1. User Access & Authentication
-Users (or Admins) open the React-based web app
+# 🔐 CloudSentry — Secure Cloud Activity Monitoring Platform
 
-They sign up or log in using AWS Cognito
+CloudSentry is a serverless, AWS-powered platform that monitors file access activity, detects suspicious behavior, and alerts admins in real-time. Built with modern cloud technologies, it offers intelligent anomaly detection, secure file handling, and visual dashboards — making it ideal for small teams, startups, or internal enterprise tools that prioritize security, auditability, and user accountability.
 
-Cognito assigns them a role: user or admin
+---
 
-📤 2. File Upload or Access
-Users can upload/download confidential files
+## ✅ CloudSentry Project Flow (Step-by-Step Architecture)
 
-Files are stored in Amazon S3 (private bucket)
+### 👥 1. User Access & Authentication
+- Users (or Admins) open the **React-based web app**
+- They **sign up or log in** using **AWS Cognito**
+- Cognito assigns them a **role**: `user` or `admin`
 
-Every action (upload, download, delete) is passed through API Gateway
+### 📤 2. File Upload or Access
+- Users can **upload/download confidential files**
+- Files are stored in **Amazon S3 (private bucket)**
+- Every action (upload, download, delete) is passed through **API Gateway**
 
-🧠 3. Lambda Handles Logic
-API Gateway triggers AWS Lambda
+### 🧠 3. Lambda Handles Logic
+- **API Gateway** triggers **AWS Lambda**
+- Lambda logs:
+  - `User ID`
+  - `Timestamp`
+  - `Action type`
+  - `File name`
+  - `IP address`
+  - `Geo-location` (via IP lookup)
 
-Lambda logs:
+### 🗃️ 4. Activity Logging
+- Logs are stored in **DynamoDB**
+- Each user has a list of their activity history
+- Admins can query logs by **time**, **IP**, or **file**
 
-User ID
+### 🚨 5. Anomaly Detection
+Lambda checks for:
+- ✅ Too many downloads in a short time
+- ✅ Unusual access hours (e.g., 3:00 AM)
+- ✅ Multiple logins from different IPs
 
-Timestamp
+If triggered:
+- Lambda sends an **alert via AWS SNS**
 
-Action type
+### 📬 6. Admin Alerts
+- Admins receive alerts through:
+  - Email or SMS (**SNS**)
+  - Real-time dashboard notifications
+- Admin can:
+  - **View flagged users**
+  - **Disable user**
+  - **Review access history**
 
-File name
+### 📊 7. Admin Dashboard (React)
+Admins can:
+- View full **Activity Feed** from DynamoDB
+- Monitor **Flagged Anomalies**
+- See **User IP Heatmaps** (via GeoIP)
+- Export **CSV reports**
+- *(Optional)* View **sentiment trends** from user messages
 
-IP address
+### 🧠 8. (Optional) Sentiment Analysis
+- User comments/messages analyzed with **AWS Comprehend**
+- Detects:
+  - Toxic behavior
+  - Suspicious communication patterns
+- Displayed on the admin dashboard
 
-Geo-location (via IP lookup)
-
-🗃️ 4. Activity Logging
-This data is stored in DynamoDB
-
-Each user has a list of their activities
-
-Admins can query logs by time, IP, or file
-
-🚨 5. Anomaly Detection
-Lambda checks for patterns:
-
-Too many downloads in a short time
-
-Unusual access hours (e.g. 3am)
-
-Multiple logins from different IPs
-
-If triggered, Lambda sends alert via AWS SNS
-
-📬 6. Admin Alerts
-Admins receive alert via:
-
-Email or SMS (SNS)
-
-Real-time dashboard notifications
-
-Admin can “disable” user or view logs
-
-📊 7. Admin Dashboard (React)
-Admin sees:
-
-Activity Feed (audit logs from DynamoDB)
-
-Flagged anomalies
-
-User IP heatmaps (via GeoIP)
-
-Downloadable CSV reports
-
-Sentiment trends (if using Comprehend)
-
-🧠 8. (Optional) Sentiment Analysis
-User comments or messages analyzed via AWS Comprehend
-
-Helps detect toxicity or suspicious communication
-
-Results shown as part of admin analytics
-
-🌐 9. Hosting & Access
-Frontend hosted via AWS Amplify or S3 + CloudFront
-
-Fully serverless, scalable, and secure
+### 🌐 9. Hosting & Access
+- Hosted via **AWS Amplify** *(or S3 + CloudFront)*
+- Fully **serverless**, **scalable**, and **secure**
